@@ -1,0 +1,46 @@
+data class RussianWord(@StringRes val singleForm: Int, @StringRes val afewForm: Int, @StringRes val pluralForm: Int)
+
+val CONTACT = RussianWord(R.string.contact_single, R.string.contact_afew, R.string.contact_plural)
+val SELECTED = RussianWord(R.string.selected_single, R.string.selected_afew, R.string.selected_plural)
+
+fun getWordFormByCount(word: RussianWord, count: Int) : String {
+    val resources = App.instance.resources
+    val currentLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        resources.configuration.locales[0].language
+    } else {
+        resources.configuration.locale.language
+    }
+    var resId: Int = -1;
+    if (currentLocale == "ru") {
+        when {
+            count == 1       -> resId = word.singleForm
+            count in 2..4    -> resId = word.afewForm
+            count in 5..20   -> resId = word.pluralForm
+            count%10 == 1    -> resId = word.singleForm
+            count%10 in 2..4 -> resId = word.afewForm
+            else             -> resId = word.pluralForm
+        }
+    } else {
+        when (count) {
+            1 -> resId = word.singleForm
+            else -> resId = word.pluralForm
+        }
+    }
+    return resources.getString(resId)
+}
+
+values\string.xml
+<string name="contact_single">contact</string>
+<string name="contact_afew">contacts</string>
+<string name="contact_plural">contacts</string>
+<string name="selected_single">Selected</string>
+<string name="selected_afew">Selected</string>
+<string name="selected_plural">Selected</string>
+
+values-ru\string.xml
+<string name="contact_single">контакт</string>
+<string name="contact_afew">контакта</string>
+<string name="contact_plural">контактов</string>
+<string name="selected_single">Выбран</string>
+<string name="selected_afew">Выбрано</string>
+<string name="selected_plural">Выбрано</string>
